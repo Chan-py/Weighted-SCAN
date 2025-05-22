@@ -11,8 +11,7 @@ import time
 import networkx as nx
 
 import scan
-# import wscan          # your Weighted-SCAN implementation
-# import unweighted_scan # thin wrapper around original SCAN
+import wscan          # your Weighted-SCAN implementation
 
 # --------------------------------------------------------------------
 # argument parsing
@@ -23,10 +22,10 @@ parser.add_argument("--eps", type=float, default=0.3,
                     help="ε similarity threshold")
 parser.add_argument("--mu",  type=int,   default=2,
                     help="minimum number of ε-neighbors (core)")
-parser.add_argument("--algorithm", choices=["weighted", "scan"],
+parser.add_argument("--algorithm", choices=["wscan", "scan"],
                     default="scan",
                     help="choose algorithm variant")
-parser.add_argument("--network", default="../dataset/real/email-core.dat",
+parser.add_argument("--network", default="../dataset/test/network.dat",
                     help="path to weighted edge list (u v w)")
 parser.add_argument("--directed", action="store_true",
                     help="treat graph as directed")
@@ -50,7 +49,7 @@ print(f"Loaded graph: {args.network}  "
 # --------------------------------------------------------------------
 start = time.time()
 
-if args.algorithm == "weighted":
+if args.algorithm == "wscan":
     clusters, hubs, outliers = wscan.run(G, eps=args.eps, mu=args.mu)
 else:  # unweighted baseline (weights ignored)
     clusters, hubs, outliers = scan.run(G, eps=args.eps, mu=args.mu)
