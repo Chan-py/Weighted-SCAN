@@ -13,6 +13,9 @@ import networkx as nx
 import scan
 import wscan          # your Weighted-SCAN implementation
 
+from check_cluster import compute_modularity_clustered_only, compute_modularity_with_outliers, conductance, intra_density, inter_density
+import plot
+
 # --------------------------------------------------------------------
 # argument parsing
 # --------------------------------------------------------------------
@@ -25,7 +28,7 @@ parser.add_argument("--mu",  type=int,   default=2,
 parser.add_argument("--algorithm", choices=["wscan", "scan"],
                     default="scan",
                     help="choose algorithm variant")
-parser.add_argument("--network", default="../dataset/test/network.dat",
+parser.add_argument("--network", default="../dataset/real/LFR_edges.dat",
                     help="path to weighted edge list (u v w)")
 parser.add_argument("--directed", action="store_true",
                     help="treat graph as directed")
@@ -66,6 +69,20 @@ print(f"runtime (seconds): {runtime:.3f}")
 print(f"#clusters         : {len(clusters)}")
 print(f"#hubs             : {len(hubs)}")
 print(f"#outliers         : {len(outliers)}")
+
+Q = compute_modularity_with_outliers(G, clusters, hubs, outliers)
+print(f"Modularity including outliers = {Q:.4f}")
+Q = compute_modularity_clustered_only(G, clusters)
+print(f"Modularity for only clusters = {Q:.4f}")
+C = conductance(G, clusters)
+print(f"Conductance C = {C:.4f}")
+
+intra = intra_density(G, clusters)
+print(f"Intra = {intra:.4f}")
+inter = inter_density(G, clusters)
+print(f"Inter = {inter:.4f}")
+
+# plot.plot_clusters(G, clusters)
 
 # optional: list first few clusters
 for cid, nodes in list(clusters.items())[:3]:
