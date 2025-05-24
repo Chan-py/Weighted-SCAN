@@ -49,39 +49,66 @@ def run(G, eps=0.5, mu=2):
 def weighted_structural_similarity(G, u, v):
     """
     Weighted Structural Similarity:
-    s_str(u,v) = sum_{x in N(u)∩N(v)} min(w(u,x),w(v,x))
-                / sqrt( sum_{x in N(u)} w(u,x) * sum_{y in N(v)} w(v,y) )
+    s_str'(u,v) = ( w(u,v) if (u,v) edge exists else 0 )
+                  + sum_{x in N(u)∩N(v)} min(w(u,x), w(v,x))
+                  ---------------------------------------------------
+                  sqrt( (sum_{x in N(u)} w(u,x)) * (sum_{y in N(v)} w(v,y)) )
     """
+    # Common Neighbors
     neigh_u = set(G.neighbors(u))
     neigh_v = set(G.neighbors(v))
     common = neigh_u & neigh_v
-    if not common:
-        return 0.0
-    # sum of min-weights over common neighbors
-    numer = sum(min(G[u][x]['weight'], G[v][x]['weight']) for x in common)
-    # total strength of each node
+
+    # direct edge weight (없으면 0)
+    w_uv = G[u][v]['weight'] if G.has_edge(u, v) else 0.0
+
+    # 공통 이웃에 대한 min-weight 합
+    common_sum = sum(
+        min(G[u][x]['weight'], G[v][x]['weight'])
+        for x in common
+    )
+
+    # 분자: direct + common
+    numer = w_uv + common_sum
+
+    # 분모: 각 노드의 total strength
     su = sum(data['weight'] for _, _, data in G.edges(u, data=True))
     sv = sum(data['weight'] for _, _, data in G.edges(v, data=True))
     if su == 0 or sv == 0:
         return 0.0
+
     return numer / math.sqrt(su * sv)
 
 def cosine_similarity(G, u, v):
     """
     Cosine Similarity:
-    s_cos(u,v) = (sum_x w(u,x)*w(v,x))
-                 / (sqrt(sum_x w(u,x)^2) * sqrt(sum_x w(v,x)^2))
+    s_cos'(u,v) = (
+        w(u,v)^2 if (u,v) edge exists else 0
+        + sum_{x in N(u)∩N(v)} w(u,x)*w(v,x)
+    ) / (
+        sqrt(sum_{x in N(u)} w(u,x)^2)
+        * sqrt(sum_{y in N(v)} w(v,y)^2)
+    )
     """
+    # 이웃 집합
     neigh_u = set(G.neighbors(u))
     neigh_v = set(G.neighbors(v))
     common = neigh_u & neigh_v
-    if not common:
-        return 0.0
-    numer = sum(G[u][x]['weight'] * G[v][x]['weight'] for x in common)
+
+    # direct edge weight (없으면 0)
+    w_uv = G[u][v]['weight'] if G.has_edge(u, v) else 0.0
+    # 분자: direct 연결 기여 (w_uv^2) + 공통 이웃 기여
+    numer = w_uv**2 + sum(
+        G[u][x]['weight'] * G[v][x]['weight']
+        for x in common
+    )
+
+    # 분모: 각 노드의 L2 노름
     norm_u = math.sqrt(sum(data['weight']**2 for _, _, data in G.edges(u, data=True)))
     norm_v = math.sqrt(sum(data['weight']**2 for _, _, data in G.edges(v, data=True)))
     if norm_u == 0 or norm_v == 0:
         return 0.0
+
     return numer / (norm_u * norm_v)
 
 def weighted_jaccard_similarity(G, u, v):
@@ -107,4 +134,4 @@ def weighted_jaccard_similarity(G, u, v):
     return numer / denom
 
 def is_eps_neighbor(G, u, v, eps):
-    return weighted_structural_similarity(G, u, v) >= eps
+    return cosine_similarity(G, u, v) >= eps

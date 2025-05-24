@@ -62,7 +62,7 @@ def inter_density(G, cluster_nodes):
 
 from sklearn.metrics import adjusted_rand_score
 
-def compute_ari_from_dict(clusters, ground_truth):
+def compute_ARI(clusters, ground_truth):
     """
     Compute Adjusted Rand Index (ARI) given:
       - clusters: dict mapping cluster_id -> iterable of nodes
@@ -90,3 +90,37 @@ def compute_ari_from_dict(clusters, ground_truth):
 # ground_truth = {1:'A',2:'A',3:'A',4:'B',5:'B',6:'C',7:'C',8:'C'}
 # ari = compute_ari_from_dict(clusters, ground_truth)
 # print(f"ARI = {ari:.4f}")
+
+
+def compute_modularity(G, clusters):
+    """
+    Compute modularity for an undirected weighted graph G and given clusters.
+    clusters: dict mapping cluster_id -> iterable of nodes
+    Returns Q = sum over clusters of [E_C/m - (sum_deg_C/(2m))^2]
+    """
+    # Total edge weight (each undirected edge counted once)
+    m = sum(data['weight'] for u, v, data in G.edges(data=True))
+    Q = 0.0
+
+    for cid, nodes in clusters.items():
+        node_set = set(nodes)
+        # Sum of weights of edges inside the cluster
+        E_C = 0.0
+        # Sum of degrees (strengths) of nodes in the cluster
+        sum_deg_C = 0.0
+
+        # Compute E_C
+        for u in node_set:
+            for v, data in G[u].items():
+                if v in node_set:
+                    E_C += data['weight']
+        E_C /= 2.0  # each internal edge counted twice in the loop
+
+        # Compute sum_deg_C
+        for u in node_set:
+            sum_deg_C += sum(data['weight'] for _, _, data in G.edges(u, data=True))
+
+        # Community-level modularity contribution
+        Q += (E_C / m) - (sum_deg_C / (2 * m))**2
+
+    return Q

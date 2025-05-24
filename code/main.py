@@ -13,7 +13,8 @@ import networkx as nx
 import scan
 import wscan          # your Weighted-SCAN implementation
 
-from check_cluster import compute_modularity_clustered_only, compute_modularity_with_outliers, conductance, intra_density, inter_density
+from check_cluster import compute_ARI, compute_modularity
+from utils import load_ground_truth
 import plot
 
 # --------------------------------------------------------------------
@@ -48,6 +49,11 @@ print(f"Loaded graph: {args.network}  "
       f"nodes={G.number_of_nodes()}  edges={G.number_of_edges()}")
 
 # --------------------------------------------------------------------
+# load answer
+# --------------------------------------------------------------------
+ground_truth = load_ground_truth("../dataset/real/LFR_labels.dat")
+
+# --------------------------------------------------------------------
 # run selected algorithm
 # --------------------------------------------------------------------
 start = time.time()
@@ -70,17 +76,23 @@ print(f"#clusters         : {len(clusters)}")
 print(f"#hubs             : {len(hubs)}")
 print(f"#outliers         : {len(outliers)}")
 
-Q = compute_modularity_with_outliers(G, clusters, hubs, outliers)
-print(f"Modularity including outliers = {Q:.4f}")
-Q = compute_modularity_clustered_only(G, clusters)
-print(f"Modularity for only clusters = {Q:.4f}")
-C = conductance(G, clusters)
-print(f"Conductance C = {C:.4f}")
+# Q = compute_modularity_with_outliers(G, clusters, hubs, outliers)
+# print(f"Modularity including outliers = {Q:.4f}")
+# Q = compute_modularity_clustered_only(G, clusters)
+# print(f"Modularity for only clusters = {Q:.4f}")
+# C = conductance(G, clusters)
+# print(f"Conductance C = {C:.4f}")
 
-intra = intra_density(G, clusters)
-print(f"Intra = {intra:.4f}")
-inter = inter_density(G, clusters)
-print(f"Inter = {inter:.4f}")
+# intra = intra_density(G, clusters)
+# print(f"Intra = {intra:.4f}")
+# inter = inter_density(G, clusters)
+# print(f"Inter = {inter:.4f}")
+
+ari_score = compute_ARI(clusters, ground_truth)
+print(f"Adjusted Rand Index: {ari_score:.4f}")
+
+modularity = compute_modularity(G, clusters)
+print(f"Modularity: {modularity:.4f}")
 
 # plot.plot_clusters(G, clusters)
 
