@@ -1,10 +1,12 @@
 import math
 from collections import deque
 
-def run(G, eps=0.5, mu=2):
+from scan import structural_similarity
+
+def run(G, similarity_func, eps=0.5, mu=2):
     # Identify core nodes
     cores = {u for u in G.nodes()
-            if sum(is_eps_neighbor(G, u, v, eps)for v in G.neighbors(u)) >= mu}
+            if sum(is_eps_neighbor(G, u, v, eps, similarity_func)for v in G.neighbors(u)) >= mu}
     
     # Cluster expansion
     clusters = {}
@@ -21,13 +23,13 @@ def run(G, eps=0.5, mu=2):
             x = queue.popleft()
             clusters[cluster_id].add(x)
             for y in G.neighbors(x):
-                if y not in visited and y in cores and is_eps_neighbor(G, x, y, eps):
+                if y not in visited and y in cores and is_eps_neighbor(G, x, y, eps, similarity_func):
                     visited.add(y)
                     queue.append(y)
         # Include directly reachable non-core
         for member in list(clusters[cluster_id]):
             for y in G.neighbors(member):
-                if y not in visited and is_eps_neighbor(G, member, y, eps):
+                if y not in visited and is_eps_neighbor(G, member, y, eps, similarity_func):
                     clusters[cluster_id].add(y)
                     visited.add(y)
                     
@@ -38,7 +40,7 @@ def run(G, eps=0.5, mu=2):
         if u in all_clustered:
             continue
         connected = {cid for cid, members in clusters.items()
-                     if any(is_eps_neighbor(G, u, v, eps) for v in members)}
+                     if any(is_eps_neighbor(G, u, v, eps, similarity_func) for v in members)}
         if len(connected) >= 2:
             hubs.add(u)
         else:
@@ -133,5 +135,31 @@ def weighted_jaccard_similarity(G, u, v):
         return 0.0
     return numer / denom
 
-def is_eps_neighbor(G, u, v, eps):
-    return cosine_similarity(G, u, v) >= eps
+def wscan_tfp_similarity(G, u, v):
+    """
+    WSCAN‐TFP similarity:
+      σ(u,v) = (|N(u) ∩ N(v)| / sqrt(|N(u)| * |N(v)|)) * w(u,v)
+    where N(x) is the set of neighbors of x (excluding x itself),
+    and w(u,v) is the direct edge weight (if no edge exists, similarity=0).
+    """
+    # if no direct edge, similarity is zero
+    if not G.has_edge(u, v):
+        return 0.0
+
+    # neighbor sets (excluding each other, though SCAN original counts all neighbors)
+    neigh_u = set(G.neighbors(u)) - {v}
+    neigh_v = set(G.neighbors(v)) - {u}
+
+    # structural similarity
+    common = neigh_u & neigh_v
+    denom = math.sqrt(len(neigh_u) * len(neigh_v))
+    if denom == 0:
+        return 0.0
+    struct_sim = len(common) / denom
+
+    # multiply by direct edge weight
+    w_uv = G[u][v]['weight']
+    return struct_sim * w_uv
+
+def is_eps_neighbor(G, u, v, eps, similarity_func):
+    return similarity_func(G, u, v) >= eps

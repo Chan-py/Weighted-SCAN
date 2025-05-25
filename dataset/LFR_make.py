@@ -3,7 +3,7 @@ import numpy as np
 from networkx.generators.community import LFR_benchmark_graph
 
 # 1. 파라미터 설정
-n = 500
+n = 20000
 tau1 = 3.0
 tau2 = 1.5
 mu = 0.1
@@ -41,12 +41,15 @@ for u, v, data in G.edges(data=True):
     data['weight'] = w
 
 # 6. edges.dat 쓰기: "u v weight"
-with open("edges.dat", "w") as f:
+edges_file = "real/running_time/" + str(n) + "edges.dat"
+labels_file = "real/running_time/" + str(n) + "labels.dat"
+
+with open(edges_file, "w") as f:
     for u, v, data in G.edges(data=True):
         f.write(f"{u} {v} {data['weight']:.6f}\n")
 
 # 7. labels.dat 쓰기: "u community_id"
-with open("labels.dat", "w") as f:
+with open(labels_file, "w") as f:
     for node in G.nodes():
         f.write(f"{node} {comm_id[node]}\n")
 

@@ -27,7 +27,7 @@ parser.add_argument("--eps", type=float, default=0.3,
 parser.add_argument("--mu",  type=int,   default=2,
                     help="minimum number of ε-neighbors (core)")
 parser.add_argument("--algorithm", choices=["wscan", "scan"],
-                    default="scan",
+                    default="wscan",
                     help="choose algorithm variant")
 parser.add_argument("--network", default="../dataset/real/LFR_edges.dat",
                     help="path to weighted edge list (u v w)")
@@ -56,10 +56,11 @@ ground_truth = load_ground_truth("../dataset/real/LFR_labels.dat")
 # --------------------------------------------------------------------
 # run selected algorithm
 # --------------------------------------------------------------------
+similarity_func = wscan.weighted_structural_similarity
 start = time.time()
 
 if args.algorithm == "wscan":
-    clusters, hubs, outliers = wscan.run(G, eps=args.eps, mu=args.mu)
+    clusters, hubs, outliers = wscan.run(G, similarity_func, eps=args.eps, mu=args.mu)
 else:  # unweighted baseline (weights ignored)
     clusters, hubs, outliers = scan.run(G, eps=args.eps, mu=args.mu)
 
