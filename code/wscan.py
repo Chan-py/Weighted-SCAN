@@ -1,10 +1,24 @@
 import math
 from collections import deque
+from itertools import chain
 
 from scan import structural_similarity
 
 def run(G, similarity_func, eps=0.5, mu=2):
     # Identify core nodes
+    # two_hop = {
+    #     u: set(chain.from_iterable(G.neighbors(n) for n in G.neighbors(u)))
+    #        | set(G.neighbors(u))
+    #     for u in G
+    # }
+    # # Identify core nodes over the 2-hop neighborhood
+    # cores = {
+    #     u for u in G
+    #     if sum(
+    #         is_eps_neighbor(G, u, v, eps, similarity_func)
+    #         for v in two_hop[u]
+    #     ) >= mu
+    # }
     # The logic should be changed to 2-hop.
     cores = {u for u in G.nodes()
             if sum(is_eps_neighbor(G, u, v, eps, similarity_func) for v in G.neighbors(u)) >= mu}
