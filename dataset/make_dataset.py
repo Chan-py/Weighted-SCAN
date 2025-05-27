@@ -15,7 +15,9 @@ def prune_by_percentile(G, q=50):
     return prune_by_threshold(G, thresh)
 
 # # 1) 내장 그래프 로드
-# G = nx.les_miserables_graph()
+G = nx.les_miserables_graph()
+print(len(G.nodes))
+print(len(G.edges))
 
 # # 2) 'value' 필드를 'weight'로 복사
 # for u, v, data in G.edges(data=True):
@@ -38,13 +40,13 @@ def prune_by_percentile(G, q=50):
 
 # print("✅ network.dat 파일이 생성되었습니다.")
 
-G = nx.read_weighted_edgelist("butterfly_edges.dat", nodetype=int)
+# G = nx.read_weighted_edgelist("butterfly_edges.dat", nodetype=int)
 
-# 2) weight == 1인 간선 제거
-# G = prune_by_threshold(G, 1)
-G = prune_by_percentile(G)
+# # 2) weight == 1인 간선 제거
+# # G = prune_by_threshold(G, 1)
+# G = prune_by_percentile(G)
 
-# 3) 결과 저장
-nx.write_weighted_edgelist(G, "real/butterfly_edges.dat", delimiter=' ')
+# # 3) 결과 저장
+# nx.write_weighted_edgelist(G, "real/butterfly_edges.dat", delimiter=' ')
 
-print("✅ pruned graph saved to collegemsg_pruned.dat")
+# print("✅ pruned graph saved to collegemsg_pruned.dat")

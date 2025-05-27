@@ -13,10 +13,8 @@ cosine similarity
 ε* = 0.10, μ* = 6, ARI* = 1.0000
 
 jaccard similarity
-ε* = 0.03, μ* = 7, ARI* = 0.9705
-ε* = 0.03, μ* = 7, Modulairty* = 0.8732
-=== Best Parameters ===
-ε* = 0.05, μ* = 3, ARI* = 0.9803
+ε* = 0.0255, μ* = 8, ARI* = 0.9729
+ε* = 0.0255, μ* = 8, Modulairty* = 0.8817
 
 scan
 ε* = 0.41, μ* = 3, ARI* = 0.5922
@@ -75,7 +73,7 @@ wscan-tfp
 ###### cosine_similarity
 ε* = 0.1987, μ* = 1, Modulairty* = 0.1461
 ###### weighted_jaccard_similarity
-ε* = 0.1000, μ* = 1, Modulairty* = 0.0183
+ε* = 0.1000, μ* = 1, Modulairty* = 0.1667
 ###### structural_similarity
 ε* = 0.2236, μ* = 1, Modulairty* = 0.0380
 ###### wscan_tfp_similarity
@@ -88,7 +86,7 @@ wscan-tfp
 ###### cosine_similarity
 ε* = 0.2620, μ* = 4, Modulairty* = 0.0997
 ###### weighted_jaccard_similarity
-ε* = 0.1860, μ* = 2, Modulairty* = 0.4242
+ε* = 0.2000, μ* = 3, Modulairty* = 0.3740
 ###### structural_similarity
 ε* = 0.2892, μ* = 5, Modulairty* = 0.0066
 ###### wscan_tfp_similarity

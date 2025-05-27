@@ -29,7 +29,7 @@ parser.add_argument("--mu",  type=int,   default=2,
 parser.add_argument("--algorithm", choices=["wscan", "scan"],
                     default="wscan",
                     help="choose algorithm variant")
-parser.add_argument("--network", default="../dataset/real/LFR_edges.dat",
+parser.add_argument("--network", default="../dataset/collegemsg_edges.dat",
                     help="path to weighted edge list (u v w)")
 parser.add_argument("--directed", action="store_true",
                     help="treat graph as directed")
@@ -44,6 +44,9 @@ if args.directed:
                                   create_using=nx.DiGraph)
 else:
     G = nx.read_weighted_edgelist(args.network, nodetype=int)
+
+print(len(G.nodes))
+print(len(G.edges))
 
 print(f"Loaded graph: {args.network}  "
       f"nodes={G.number_of_nodes()}  edges={G.number_of_edges()}")

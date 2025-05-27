@@ -5,8 +5,9 @@ from scan import structural_similarity
 
 def run(G, similarity_func, eps=0.5, mu=2):
     # Identify core nodes
+    # The logic should be changed to 2-hop.
     cores = {u for u in G.nodes()
-            if sum(is_eps_neighbor(G, u, v, eps, similarity_func)for v in G.neighbors(u)) >= mu}
+            if sum(is_eps_neighbor(G, u, v, eps, similarity_func) for v in G.neighbors(u)) >= mu}
     
     # Cluster expansion
     clusters = {}
@@ -115,25 +116,33 @@ def cosine_similarity(G, u, v):
 
 def weighted_jaccard_similarity(G, u, v):
     """
-    Weighted Jaccard Similarity:
-    s_J(u,v) = sum_x min(w(u,x), w(v,x))
-               / sum_x max(w(u,x), w(v,x))
+    Weighted Jaccard Similarity (with direct edge term and intersection only):
+    s_J(u,v) = w(u,v)
+               + sum_{x in N(u) ∩ N(v)} min(w(u,x), w(v,x))
+               ---------------------------------------------------
+               sum_{x in N(u) ∪ N(v)} max(w(u,x), w(v,x))
     """
     neigh_u = set(G.neighbors(u))
     neigh_v = set(G.neighbors(v))
+    common_neigh = neigh_u & neigh_v
     all_neigh = neigh_u | neigh_v
-    if not all_neigh:
-        return 0.0
-    numer = 0.0
+
+    # numerator: direct edge + shared‐neighbor min‐weights
+    w_uv = G[u][v]['weight'] if G.has_edge(u, v) else 0.0
+    numer = w_uv
+    for x in common_neigh:
+        wu = G[u][x]['weight']
+        wv = G[v][x]['weight']
+        numer += min(wu, wv)
+
+    # denominator: union max‐weights
     denom = 0.0
     for x in all_neigh:
         wu = G[u][x]['weight'] if x in neigh_u else 0.0
         wv = G[v][x]['weight'] if x in neigh_v else 0.0
-        numer += min(wu, wv)
         denom += max(wu, wv)
-    if denom == 0:
-        return 0.0
-    return numer / denom
+
+    return numer / denom if denom > 0 else 0.0
 
 def wscan_tfp_similarity(G, u, v):
     """
