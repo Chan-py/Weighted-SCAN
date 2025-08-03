@@ -20,8 +20,16 @@ def run(G, similarity_func, eps=0.5, mu=2):
     #     ) >= mu
     # }
     # The logic should be changed to 2-hop.
+
+    # For Debugging
+    for u in G.nodes():
+        for v in G.neighbors(u):
+            print(u, v, similarity_func(G, u, v))
+
+
     cores = {u for u in G.nodes()
             if sum(is_eps_neighbor(G, u, v, eps, similarity_func) for v in G.neighbors(u)) >= mu}
+    print(cores)
     
     # Cluster expansion
     clusters = {}

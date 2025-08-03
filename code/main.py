@@ -22,14 +22,14 @@ import plot
 # --------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Weighted-SCAN runner")
 
-parser.add_argument("--eps", type=float, default=0.3,
+parser.add_argument("--eps", type=float, default=0.5,
                     help="ε similarity threshold")
 parser.add_argument("--mu",  type=int,   default=2,
                     help="minimum number of ε-neighbors (core)")
 parser.add_argument("--algorithm", choices=["wscan", "scan"],
                     default="wscan",
                     help="choose algorithm variant")
-parser.add_argument("--network", default="../dataset/collegemsg_edges.dat",
+parser.add_argument("--network", default="../dataset/example.dat",
                     help="path to weighted edge list (u v w)")
 parser.add_argument("--directed", action="store_true",
                     help="treat graph as directed")
@@ -54,7 +54,7 @@ print(f"Loaded graph: {args.network}  "
 # --------------------------------------------------------------------
 # load answer
 # --------------------------------------------------------------------
-ground_truth = load_ground_truth("../dataset/real/LFR_labels.dat")
+# ground_truth = load_ground_truth("../dataset/example.dat")
 
 # --------------------------------------------------------------------
 # run selected algorithm
@@ -92,14 +92,14 @@ print(f"#outliers         : {len(outliers)}")
 # inter = inter_density(G, clusters)
 # print(f"Inter = {inter:.4f}")
 
-ari_score = compute_ARI(clusters, ground_truth)
-print(f"Adjusted Rand Index: {ari_score:.4f}")
+# ari_score = compute_ARI(clusters, ground_truth)
+# print(f"Adjusted Rand Index: {ari_score:.4f}")
 
-modularity = compute_modularity(G, clusters)
-print(f"Modularity: {modularity:.4f}")
+# modularity = compute_modularity(G, clusters)
+# print(f"Modularity: {modularity:.4f}")
 
 # plot.plot_clusters(G, clusters)
 
 # optional: list first few clusters
 for cid, nodes in list(clusters.items())[:3]:
-    print(f"  cluster {cid:<2} size={len(nodes)} sample={list(nodes)[:5]}")
+    print(f"  cluster {cid:<2} size={len(nodes)} sample={list(nodes)}")
