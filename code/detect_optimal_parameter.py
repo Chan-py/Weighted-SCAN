@@ -1,12 +1,9 @@
-import math
 import networkx as nx
 import numpy as np
-from scipy.interpolate import UnivariateSpline
 
 from itertools import combinations
 
-from wscan import weighted_structural_similarity, cosine_similarity, weighted_jaccard_similarity, wscan_tfp_similarity
-from scan import structural_similarity
+import similarity
 
 def detect_epsilon_kneedle(sim_values):
     sims = sorted(sim_values, reverse=True)     # 1) 내림차순
@@ -38,7 +35,7 @@ def detect_epsilon_first_knee(sim_values):
 
 def suggest_mu(G, epsilon, sim_func):
     counts = [
-        sum(1 for v in G.neighbors(u) if sim_func(G, u, v) >= epsilon)
+        sum(1 for v in G.neighbors(u) if sim_func(G, u, v, 1) >= epsilon)
         for u in G.nodes()
     ]
     # 평균보다 중앙값이 이상치에 덜 민감
@@ -46,11 +43,11 @@ def suggest_mu(G, epsilon, sim_func):
 
 if __name__ == "__main__":
     G = nx.read_weighted_edgelist("../dataset/real/LFR_edges.dat")
-    similarity_func = wscan_tfp_similarity
+    similarity_func = similarity.Gen_wscan_similarity
 
     sims = []
     for u, v in combinations(G.nodes(), 2):
-        sims.append(similarity_func(G, u, v))
+        sims.append(similarity_func(G, u, v, 1))
 
     sims = [s for s in sims if s > 0]
 
