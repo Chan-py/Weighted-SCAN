@@ -15,7 +15,7 @@ def wscan_similarity(G, u, v, gamma):
     """
     # direct edge weight
     w_uv = G[u][v]['weight'] if G.has_edge(u, v) else 0.0
-    return scan_similarity(G, u, v) * w_uv
+    return scan_similarity(G, u, v, gamma) * w_uv
 
 def cosine_similarity(G, u, v, gamma):
     """

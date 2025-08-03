@@ -9,9 +9,8 @@ import networkx as nx
 import clustering
 import similarity
 
-from check_cluster import compute_ARI, compute_modularity
-from utils import load_ground_truth
-import plot
+from metrics import compute_ARI, compute_modularity
+from utils import load_ground_truth, plot_clusters
 
 # --------------------------------------------------------------------
 # argument parsing
@@ -28,7 +27,7 @@ parser.add_argument("--gamma",  type=float,   default=1,
 parser.add_argument("--similarity", choices=["scan", "wscan", "cosine", "Gen", "Jaccard"],
                     default="Gen",
                     help="choose similarity function")
-parser.add_argument("--network", default="../dataset/real/LFR_edges.dat",
+parser.add_argument("--network", default="../dataset/example.dat",
                     help="path to weighted edge list (u v w)")
 
 args = parser.parse_args()
@@ -47,7 +46,7 @@ print(f"Loaded graph: {args.network}  "
 # --------------------------------------------------------------------
 # load answer
 # --------------------------------------------------------------------
-ground_truth = load_ground_truth("../dataset/real/LFR_labels.dat")
+# ground_truth = load_ground_truth("../dataset/real/LFR_labels.dat")
 
 # --------------------------------------------------------------------
 # run selected algorithm
@@ -92,10 +91,10 @@ print(f"#outliers         : {len(outliers)}")
 # inter = inter_density(G, clusters)
 # print(f"Inter = {inter:.4f}")
 
-ari_score = compute_ARI(clusters, ground_truth)
-print(f"Adjusted Rand Index: {ari_score:.4f}")
+# ari_score = compute_ARI(clusters, ground_truth)
+# print(f"Adjusted Rand Index: {ari_score:.4f}")
 
 # modularity = compute_modularity(G, clusters)
 # print(f"Modularity: {modularity:.4f}")
 
-# plot.plot_clusters(G, clusters)
+plot_clusters(G, clusters)

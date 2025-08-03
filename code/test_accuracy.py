@@ -8,8 +8,8 @@ from utils import load_ground_truth
 from check_cluster import compute_ARI, compute_modularity
 from detect_optimal_parameter import detect_epsilon_first_knee, detect_epsilon_kneedle, suggest_mu
 
-G = nx.read_weighted_edgelist("../dataset/real/LFR_edges.dat", nodetype=int)
-ground_truth = load_ground_truth("../dataset/real/LFR_labels.dat")
+G = nx.read_weighted_edgelist("../dataset/real/les_miserable_edges.dat", nodetype=int)
+# ground_truth = load_ground_truth("../dataset/real/LFR_labels.dat")
 
 sim = {"scan" : similarity.scan_similarity, "wscan" : similarity.wscan_similarity,
        "cosine" : similarity.cosine_similarity, "Gen" : similarity.Gen_wscan_similarity, 
@@ -43,13 +43,13 @@ for s in sim:
     for eps, mu in candidates:
         clusters, hubs, outliers = clustering.run(G, similarity_func, eps=eps, mu=mu)
 
-        ari = compute_ARI(clusters, ground_truth)
-        print(f"ε={eps:.2f}, μ={mu:2d} -> ARI={ari:.4f}")
-        if ari > best_ari:
-            best_ari = ari
-            best_ari_params = (eps, mu)
+        # ari = compute_ARI(clusters, ground_truth)
+        # # print(f"ε={eps:.2f}, μ={mu:2d} -> ARI={ari:.4f}")
+        # if ari > best_ari:
+        #     best_ari = ari
+        #     best_ari_params = (eps, mu)
         modularity = compute_modularity(G, clusters)
-        print(f"ε={eps:.2f}, μ={mu:2d} -> Modularity={modularity:.4f}")
+        # print(f"ε={eps:.2f}, μ={mu:2d} -> Modularity={modularity:.4f}")
         if modularity > best_mod:
             best_mod = modularity
             best_mod_params = (eps, mu)
@@ -57,8 +57,8 @@ for s in sim:
 
     # 7) 결과 출력
     print("######", s)
-    eps_opt, mu_opt = best_ari_params
     print("=== Best Parameters ===")
-    print(f"ε* = {eps_opt:.4f}, μ* = {mu_opt}, ARI* = {best_ari:.4f}")
+    # eps_opt, mu_opt = best_ari_params
+    # print(f"ε* = {eps_opt:.4f}, μ* = {mu_opt}, ARI* = {best_ari:.4f}")
     eps_opt, mu_opt = best_mod_params
     print(f"ε* = {eps_opt:.4f}, μ* = {mu_opt}, Modulairty* = {best_mod:.4f}")
