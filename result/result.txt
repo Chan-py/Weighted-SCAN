@@ -1,0 +1,96 @@
+moreno_names
+
+nodes=1773  edges=9131
+
+======== Max of  scan
+ε=0.50, μ= 2 -> Modularity=0.2677
+
+======== Max of  wscan
+ε=0.60, μ= 2 -> Modularity=0.0600
+
+======== Max of  cosine
+ε=0.50, μ= 2 -> Modularity=0.3212
+
+======== Max of  Gen
+ε=0.40, μ= 2 -> Modularity=0.3430
+
+======== Max of  Jaccard
+ε=0.25, μ= 1 -> Modularity=0.2741
+
+
+sociopatterns
+
+nodes=410  edges=2765
+======== Max of  scan
+ε=0.45, μ= 5 -> Modularity=0.6447
+
+======== Max of  wscan
+ε=0.55, μ= 7 -> Modularity=0.2724
+
+======== Max of  cosine
+ε=0.45, μ= 3 -> Modularity=0.6723
+
+======== Max of  Gen
+ε=0.40, μ= 3 -> Modularity=0.6701
+
+======== Max of  Jaccard
+ε=0.30, μ= 2 -> Modularity=0.6740
+
+
+dnc-corecipient
+
+nodes=906  edges=10429
+======== Max of  scan
+ε=0.60, μ= 1 -> Modularity=0.0818
+
+======== Max of  wscan
+ε=0.60, μ= 1 -> Modularity=0.0040
+
+======== Max of  cosine
+ε=0.55, μ= 1 -> Modularity=0.1163
+
+======== Max of  Gen
+ε=0.45, μ= 1 -> Modularity=0.1136
+
+======== Max of  Jaccard
+ε=0.45, μ= 1 -> Modularity=0.1583
+
+
+college  뮤가 1인 건 의미가 없다.
+nodes=1203  edges=5839
+======== Max of  scan
+ε=0.25, μ= 1 -> Modularity=0.1288
+
+======== Max of  wscan
+ε=0.60, μ= 4 -> Modularity=0.0011
+
+======== Max of  cosine
+ε=0.25, μ= 1 -> Modularity=0.2335
+
+======== Max of  Gen
+ε=0.20, μ= 1 -> Modularity=0.2156
+
+======== Max of  Jaccard
+ε=0.10, μ= 1 -> Modularity=0.1667
+
+les
+nodes=58  edges=157
+======== Max of  scan
+ε=0.60, μ= 3 -> Modularity=0.4294
+
+======== Max of  wscan
+ε=0.10, μ= 5 -> Modularity=-0.0001
+
+======== Max of  cosine
+ε=0.45, μ= 4 -> Modularity=0.4904
+
+======== Max of  Gen
+ε=0.50, μ= 2 -> Modularity=0.4747
+
+======== Max of  Jaccard
+ε=0.30, μ= 2 -> Modularity=0.4605
+
+
+
+
+hub_centric 낫배드

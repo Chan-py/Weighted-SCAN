@@ -1,16 +1,18 @@
 # Usage example:
-#   python main.py --network ../dataset/email.edgelist \
+#   python main.py --network collegemsg \
 #                  --eps 0.25 --mu 2 --similarity Gen
 
 import argparse
 import time
 import networkx as nx
+import psutil
+import os
 
 import clustering
 import similarity
 
-from metrics import compute_ARI, compute_modularity
-from utils import load_ground_truth, plot_clusters
+from metrics import compute_ARI, compute_modularity, compute_DBI, compute_SI, compute_Qs
+from utils import load_ground_truth, plot_clusters, save_result_to_csv
 
 # --------------------------------------------------------------------
 # argument parsing
@@ -27,18 +29,24 @@ parser.add_argument("--gamma",  type=float,   default=1,
 parser.add_argument("--similarity", choices=["scan", "wscan", "cosine", "Gen", "Jaccard"],
                     default="Gen",
                     help="choose similarity function")
-parser.add_argument("--network", default="../dataset/example.dat",
+parser.add_argument("--network", default="../dataset/real/moreno_names/network.dat",
                     help="path to weighted edge list (u v w)")
+parser.add_argument("--gt", default=None,
+                    help="path to ground truth")
 
 args = parser.parse_args()
+
+process = psutil.Process(os.getpid())
+memory_before = process.memory_info().rss / (1024 * 1024)  # Convert to MB
 
 # --------------------------------------------------------------------
 # load network  (expects 'u v weight' per line)
 # --------------------------------------------------------------------
-G = nx.read_weighted_edgelist(args.network, nodetype=int)
+dataset = "../dataset/real/" + args.network + "/network.dat"
+G = nx.read_weighted_edgelist(dataset, nodetype=int)
 
-print(len(G.nodes))
-print(len(G.edges))
+# print(len(G.nodes))
+# print(len(G.edges))
 
 print(f"Loaded graph: {args.network}  "
       f"nodes={G.number_of_nodes()}  edges={G.number_of_edges()}")
@@ -46,7 +54,8 @@ print(f"Loaded graph: {args.network}  "
 # --------------------------------------------------------------------
 # load answer
 # --------------------------------------------------------------------
-# ground_truth = load_ground_truth("../dataset/real/LFR_labels.dat")
+if args.gt:
+      ground_truth = load_ground_truth("../dataset/real/LFR_labels.dat")
 
 # --------------------------------------------------------------------
 # run selected algorithm
@@ -60,6 +69,9 @@ similarity_func = sim[args.similarity]
 start = time.time()
 clusters, hubs, outliers = clustering.run(G, similarity_func, eps=args.eps, mu=args.mu, gamma=args.gamma)
 runtime = time.time() - start
+
+memory_after = process.memory_info().rss / (1024 * 1024)  # Convert to MB
+memory_usage = memory_after - memory_before  # Calculate memory used
 
 # --------------------------------------------------------------------
 # basic report
@@ -79,22 +91,18 @@ print(f"#outliers         : {len(outliers)}")
 # metrics
 # --------------------------------------------------------------------
 
-# Q = compute_modularity_with_outliers(G, clusters, hubs, outliers)
-# print(f"Modularity including outliers = {Q:.4f}")
-# Q = compute_modularity_clustered_only(G, clusters)
-# print(f"Modularity for only clusters = {Q:.4f}")
-# C = conductance(G, clusters)
-# print(f"Conductance C = {C:.4f}")
+if args.gt:
+      ari_score = compute_ARI(clusters, ground_truth)
+      print(f"Adjusted Rand Index: {ari_score:.4f}")
+else:
+      ari_score = None
 
-# intra = intra_density(G, clusters)
-# print(f"Intra = {intra:.4f}")
-# inter = inter_density(G, clusters)
-# print(f"Inter = {inter:.4f}")
+modularity = compute_modularity(G, clusters)
+DBI = compute_DBI(G, clusters)
+SI = compute_SI(G, clusters)
+Qs = compute_Qs(G, clusters, similarity_func, args.gamma)
 
-# ari_score = compute_ARI(clusters, ground_truth)
-# print(f"Adjusted Rand Index: {ari_score:.4f}")
+# plot_clusters(G, clusters)
 
-# modularity = compute_modularity(G, clusters)
-# print(f"Modularity: {modularity:.4f}")
-
-plot_clusters(G, clusters)
+args.output_path = "./output/results.csv"
+save_result_to_csv(args, runtime, memory_usage, ari_score, modularity, DBI, SI, Qs)

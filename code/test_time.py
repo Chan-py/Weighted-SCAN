@@ -7,7 +7,7 @@ import scan
 
 from utils import load_ground_truth
 from check_cluster import compute_ARI, compute_modularity
-from detect_optimal_parameter import detect_epsilon_first_knee, detect_epsilon_kneedle, suggest_mu
+from code.make_test_txt import detect_epsilon_first_knee, detect_epsilon_kneedle, suggest_mu
 
 times = [1000, 2000, 5000, 10000, 20000]
 for t in times:
